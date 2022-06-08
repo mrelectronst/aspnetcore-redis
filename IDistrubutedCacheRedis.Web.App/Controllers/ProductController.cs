@@ -11,7 +11,7 @@ namespace IDistrubutedCacheRedis.Web.App.Controllers
         {
             _distrubutedCache = distrubutedCache;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             DistributedCacheEntryOptions cacheOptions = new DistributedCacheEntryOptions();
 
@@ -20,20 +20,23 @@ namespace IDistrubutedCacheRedis.Web.App.Controllers
             cacheOptions.SlidingExpiration = TimeSpan.FromSeconds(60);
 
             _distrubutedCache.SetString("name", "john", cacheOptions);
+            await _distrubutedCache.SetStringAsync("surname", "car", cacheOptions);
 
             return View();
         }
 
-        public IActionResult ShowCache()
+        public async Task<IActionResult> ShowCache()
         {
             ViewBag.Name = _distrubutedCache.GetString("name");
+            ViewBag.Name = await _distrubutedCache.GetStringAsync("car");
 
             return View();
         }
 
-        public IActionResult RemoveCache()
+        public async Task<IActionResult> RemoveCache()
         {
             _distrubutedCache.Remove("name");
+            await _distrubutedCache.RemoveAsync("car");
 
             return View();
         }
