@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IDistrubutedCacheRedis.Web.App.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace IDistrubutedCacheRedis.Web.App.Controllers
 {
@@ -15,12 +18,22 @@ namespace IDistrubutedCacheRedis.Web.App.Controllers
         {
             DistributedCacheEntryOptions cacheOptions = new DistributedCacheEntryOptions();
 
-            cacheOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(2);
+            cacheOptions.AbsoluteExpiration = DateTime.Now.AddMinutes(10);
 
-            cacheOptions.SlidingExpiration = TimeSpan.FromSeconds(60);
+            cacheOptions.SlidingExpiration = TimeSpan.FromSeconds(120);
 
-            _distrubutedCache.SetString("name", "john", cacheOptions);
-            await _distrubutedCache.SetStringAsync("surname", "car", cacheOptions);
+            //_distrubutedCache.SetString("name", "john", cacheOptions);
+            //await _distrubutedCache.SetStringAsync("surname", "car", cacheOptions);
+
+            var product = new Product { Id = 1, Name = "Pen1", Price = 10 };
+
+            string jsonProduct = JsonConvert.SerializeObject(product);
+
+            Byte[] byteProduct = Encoding.UTF8.GetBytes(jsonProduct);
+
+            _distrubutedCache.Set("byteProduct1",byteProduct);
+
+            //await _distrubutedCache.SetStringAsync("product:2", jsonProduct);
 
             return View();
         }
@@ -28,7 +41,16 @@ namespace IDistrubutedCacheRedis.Web.App.Controllers
         public async Task<IActionResult> ShowCache()
         {
             ViewBag.Name = _distrubutedCache.GetString("name");
-            ViewBag.Name = await _distrubutedCache.GetStringAsync("car");
+
+            ViewBag.Surname = await _distrubutedCache.GetStringAsync("car");
+
+            Byte[] byteProduct = await _distrubutedCache.GetAsync("byteProduct1");
+
+            string strProduct = Encoding.UTF8.GetString(byteProduct);
+
+            var product = JsonConvert.DeserializeObject<Product>(strProduct);
+
+            ViewBag.Product = product;
 
             return View();
         }
