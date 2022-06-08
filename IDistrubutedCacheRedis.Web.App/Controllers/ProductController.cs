@@ -31,7 +31,7 @@ namespace IDistrubutedCacheRedis.Web.App.Controllers
 
             Byte[] byteProduct = Encoding.UTF8.GetBytes(jsonProduct);
 
-            _distrubutedCache.Set("byteProduct1",byteProduct);
+            _distrubutedCache.Set("byteProduct1", byteProduct);
 
             //await _distrubutedCache.SetStringAsync("product:2", jsonProduct);
 
@@ -61,6 +61,24 @@ namespace IDistrubutedCacheRedis.Web.App.Controllers
             await _distrubutedCache.RemoveAsync("car");
 
             return View();
+        }
+
+        public async Task<IActionResult> ImageCache()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/bobMarley.jpg");
+
+            byte[] imageByte = System.IO.File.ReadAllBytes(path);
+
+            _distrubutedCache.Set("imageBob", imageByte);
+
+            return View();
+        }
+
+        public async Task<IActionResult> ShowImage()
+        {
+            byte[] imageByte = await _distrubutedCache.GetAsync("imageBob");
+
+            return File(imageByte, "image/jpg");
         }
     }
 }

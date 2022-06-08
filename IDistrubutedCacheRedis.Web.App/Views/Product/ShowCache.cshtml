@@ -1,7 +1,13 @@
 ﻿
 @{
     ViewData["Title"] = "ShowCache";
+
+    Product product = ViewBag.Product as Product;
 }
 
 <h1>@ViewBag.Name</h1>
+
+<h3>ID:@product.Id</h3>
+<h3>Name:@product.Name</h3>
+<h3>Price:@product.Price</h3>
 
